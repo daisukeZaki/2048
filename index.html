@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="top">
+        <p id="1">2</p>
+        <p id="2"></p>
+        <p id="3"></p>
+        <p id="4"></p>
+      </div>
+      <div class="middleTop">
+        <p id="5"></p>
+        <p id="6"></p>
+        <p id="7"></p>
+        <p id="8"></p>
+      </div>
+      <div class="middleUnder">
+        <p id="9"></p>
+        <p id="10"></p>
+        <p id="11"></p>
+        <p id="12"></p>
+      </div>
+      <div class="under">
+        <p id="13"></p>
+        <p id="14"></p>
+        <p id="15"></p>
+        <p id="16"></p>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    let numList = {
+      ArrowUp: [
+        ["1", "5", "9", "13"],
+        ["2", "6", "10", "14"],
+        ["3", "7", "11", "15"],
+        ["4", "8", "12", "16"],
+      ],
+      ArrowRight: [
+        ["4", "3", "2", "1"],
+        ["8", "7", "6", "5"],
+        ["12", "11", "10", "9"],
+        ["16", "15", "14", "13"],
+      ],
+      ArrowDown: [
+        ["13", "9", "5", "1"],
+        ["14", "10", "6", "2"],
+        ["15", "11", "7", "3"],
+        ["16", "12", "8", "4"],
+      ],
+      ArrowLeft: [
+        ["1", "2", "3", "4"],
+        ["5", "6", "7", "8"],
+        ["9", "10", "11", "12"],
+        ["13", "14", "15", "16"],
+      ],
+    };
+
+    async function numberConversion(command, arrayNum) {
+      let pushBox = [];
+
+      //方向キーにより取り出し順が決定
+      for (let num of numList[command][arrayNum]) {
+        pushBox.push(document.getElementById(num).textContent);
+        document.getElementById(num).className = "";
+      }
+      //空白部を削除
+      const filterBox = await pushBox.filter((num) => num > 1);
+      console.log(filterBox);
+      //取得配列の中身を計算
+      let addBox = [];
+      if (filterBox.length === 0 || filterBox.length === 1) {
+        console.log("filterBoxが0,1のどちらか");
+        addBox = filterBox;
+      } else if (filterBox.length === 2) {
+        console.log("filterBoxが2のどちらか");
+        filterBox[0] === filterBox[1]
+          ? (addBox[0] = String(Number(filterBox[0]) * 2))
+          : (addBox = filterBox);
+      } else if (filterBox.length === 3) {
+        console.log("filterBoxが3のどちらか");
+        if (filterBox[0] === filterBox[1]) {
+          addBox[0] = String(Number(filterBox[0]) * 2);
+          addBox[1] = filterBox[2];
+        } else if (filterBox[1] === filterBox[2]) {
+          addBox[0] = filterBox[0];
+          addBox[1] = String(Number(filterBox[1]) * 2);
+        } else {
+          addBox = filterBox;
+        }
+      } else if (filterBox.length === 4) {
+        console.log("filterBoxが4のどちらか");
+        if (filterBox[0] === filterBox[1]) {
+          addBox[0] = String(Number(filterBox[0]) * 2);
+
+          if (filterBox[2] === filterBox[3]) {
+            addBox[1] = String(Number(filterBox[2]) * 2);
+          } else {
+            addBox[1] = filterBox[2];
+            addBox[2] = filterBox[3];
+          }
+        } else if (filterBox[1] === filterBox[2]) {
+          addBox[0] = filterBox[0];
+          addBox[1] = String(Number(filterBox[1]) * 2);
+          addBox[2] = filterBox[3];
+        } else if (filterBox[2] === filterBox[3]) {
+          addBox[0] = filterBox[0];
+          addBox[1] = filterBox[1];
+          addBox[2] = String(Number(filterBox[2]) * 2);
+        } else {
+          console.log("どちらも不一致");
+          addBox = filterBox;
+        }
+      }
+      console.log("addbox", addBox);
+      for (let i = 0; i < 4; i++) {
+        const targetNum = document.getElementById(
+          numList[command][arrayNum][i]
+        );
+        targetNum.textContent = addBox[i] === undefined ? "" : addBox[i];
+        targetNum.className = addBox[i] === undefined ? "" : addBox[i];
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      await conversion();
+      //隙間に数字の追加
+      let noTextBox = [];
+      document.addEventListener("keyup", (event) => {
+        const keyName = event.key;
+        if (
+          keyName === "ArrowDown" ||
+          keyName === "ArrowLeft" ||
+          keyName === "ArrowUp" ||
+          keyName === "ArrowRight"
+        ) {
+          for (let i = 1; i <= 16; i++) {
+            if (document.getElementById(i).textContent === "") {
+              console.log(document.getElementById(i).textContent);
+
+              noTextBox.push(i);
+            }
+          }
+          console.log("noTextBox", noTextBox);
+
+          const randomNum = Math.floor(Math.random() * noTextBox.length);
+          const setNumber = document.getElementById(noTextBox[randomNum]);
+          setNumber.textContent = "2";
+          setNumber.className = 2;
+          noTextBox = [];
+        }
+      });
+    });
+
+    function conversion() {
+      document.addEventListener("keydown", async (event) => {
+        const keyName = event.key;
+        console.log(keyName);
+
+        if (
+          keyName === "ArrowDown" ||
+          keyName === "ArrowLeft" ||
+          keyName === "ArrowUp" ||
+          keyName === "ArrowRight"
+        ) {
+          numberConversion(keyName, 0);
+        }
+      });
+      document.addEventListener("keydown", async (event) => {
+        const keyName = event.key;
+        console.log(keyName);
+
+        if (
+          keyName === "ArrowDown" ||
+          keyName === "ArrowLeft" ||
+          keyName === "ArrowUp" ||
+          keyName === "ArrowRight"
+        ) {
+          numberConversion(keyName, 1);
+        }
+      });
+      document.addEventListener("keydown", async (event) => {
+        const keyName = event.key;
+        console.log(keyName);
+
+        if (
+          keyName === "ArrowDown" ||
+          keyName === "ArrowLeft" ||
+          keyName === "ArrowUp" ||
+          keyName === "ArrowRight"
+        ) {
+          numberConversion(keyName, 2);
+        }
+      });
+      document.addEventListener("keydown", async (event) => {
+        const keyName = event.key;
+        console.log(keyName);
+
+        if (
+          keyName === "ArrowDown" ||
+          keyName === "ArrowLeft" ||
+          keyName === "ArrowUp" ||
+          keyName === "ArrowRight"
+        ) {
+          numberConversion(keyName, 3);
+        }
+      });
+    }
+    //隙間に数字の追加
+    // document.addEventListener("keyup", async () => {
+    //   let noTextBox = [];
+    //   for (let i = 1; i <= 16; i++) {
+    //     if (document.getElementById(i).textContent.length > 0) {
+    //       noTextBox.push(i);
+    //     }
+    //   }
+    //   const randomNum = Math.floor(Math.random() * noTextBox.length);
+    //   const setNumber = document.getElementById(noTextBox[randomNum]);
+    //   setNumber.textContent = "2";
+    // });
+  </script>
+</html>
